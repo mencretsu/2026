@@ -27,7 +27,7 @@ function copyCA(){
 }
 document.addEventListener('click', (e)=>{
   if(e.target.closest('[data-copy]')){ e.preventDefault(); copyCA(); }
-  if(e.target.closest('[data-view-contract]')){ e.preventDefault(); window.open('https://enter-violet.com','_blank'); }
+  if(e.target.closest('[data-view-contract]')){ e.preventDefault(); window.open('https://mencretsu.github.io/wtfchan/','_blank'); }
 });
 
 // Live feed indicator
@@ -341,7 +341,7 @@ async function pv_update() {
 
 /* VIOLET_LIVE_FIX_V223 */
 const VIOLET = {
-  PAIR: "6XhRjsjdZYf2m8nMf68JZ5HNpWx2CNcc7eTjsM6QcuZW",
+  PAIR: "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF",
   CA: (typeof CONFIG!=='undefined' && CONFIG.CONTRACT) ? CONFIG.CONTRACT : "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF"
 };
 async function vx_ds_by_pair(pairId) {
@@ -440,7 +440,7 @@ setInterval(vx_updateHUD, 10000);
 
   async function dsByPair(){
     try{
-      const d = await j("https://api.dexscreener.com/latest/dex/pairs/solana/j22p3xxwrdtsc2nmvhj16ar4gm9k1malkxrdlatfzhuw");
+      const d = await j("https://api.dexscreener.com/latest/dex/pairs/solana/HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF");
       const p = d && d.pairs && d.pairs[0];
       if(!p) return null;
       const price = Number(p.priceUsd || 0);
