@@ -1,7 +1,7 @@
 
 // CONFIG
 const CONFIG = {
-  CONTRACT: '4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump', // replace when live
+  CONTRACT: 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF', // replace when live
   BIRDEYE_KEY: window.BIRDEYE_API_KEY || '',
   POLL_MS: 60000
 };
@@ -147,7 +147,7 @@ setTimeout(refreshLive, 1400);
 // System log strip rotation
 (function(){
   const lines=[
-    "[SYS] Violet adapting to Solana transaction layer.",
+    "[SYS] WTF adapting to Solana transaction layer.",
     "[LOG] Neural feed sync: stable.",
     "[TRACE] Human behavior model updated.",
     "[CORE] Signal-to-noise ratio improving.",
@@ -201,14 +201,14 @@ setTimeout(refreshLive, 1400);
     btn.dataset.bound = '1';
     btn.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText('4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump');
+        await navigator.clipboard.writeText('HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF');
         const prev = btn.textContent;
         btn.textContent = 'Copied';
         setTimeout(()=>btn.textContent='CA', 1600);
       } catch(e){
         // Fallback for older browsers
         const ta = document.createElement('textarea');
-        ta.value = '4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump';
+        ta.value = 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF';
         document.body.appendChild(ta);
         ta.select();
         try { document.execCommand('copy'); } catch(_e){}
@@ -230,11 +230,11 @@ setTimeout(refreshLive, 1400);
     btn.addEventListener('click', async () => {
       const setCopied = () => { const p = btn.textContent; btn.textContent = 'Copied'; setTimeout(()=>btn.textContent='Copy', 1600); };
       try {
-        await navigator.clipboard.writeText('4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump');
+        await navigator.clipboard.writeText('HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF');
         setCopied();
       } catch(e){
         const ta = document.createElement('textarea');
-        ta.value = '4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump';
+        ta.value = 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF';
         document.body.appendChild(ta);
         ta.select();
         try { document.execCommand('copy'); } catch(_e){}
@@ -253,7 +253,7 @@ setTimeout(refreshLive, 1400);
     if(btn){ btn.textContent = txt; }
   }
   function copyFixedCA(){
-    var ca = '4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump';
+    var ca = 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF';
     if(navigator.clipboard && navigator.clipboard.writeText){
       return navigator.clipboard.writeText(ca);
     } else {
@@ -285,7 +285,7 @@ setTimeout(refreshLive, 1400);
 /* VIOLET_LIVE_HUD_V222 */
 async function pv_dex_pair() {
   try {
-    const r = await fetch("https://api.dexscreener.com/latest/dex/pairs/solana/j22p3xxwrdtsc2nmvhj16ar4gm9k1malkxrdlatfzhuw");
+    const r = await fetch("https://api.dexscreener.com/latest/dex/pairs/solana/HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF");
     const j = await r.json();
     const p = j && j.pairs && j.pairs[0];
     if (!p) return null;
@@ -316,7 +316,7 @@ async function pv_holders(ca) {
   } catch (e) { console.error("holders", e); return null; }
 }
 async function pv_update() {
-  const ca = (typeof CONFIG !== "undefined" && CONFIG.CONTRACT) ? CONFIG.CONTRACT : "4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump";
+  const ca = (typeof CONFIG !== "undefined" && CONFIG.CONTRACT) ? CONFIG.CONTRACT : "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF";
   let price = null, mc = null;
   let ds = await pv_dex_pair();
   if (!ds) ds = await pv_dex_token(ca);
@@ -342,7 +342,7 @@ async function pv_update() {
 /* VIOLET_LIVE_FIX_V223 */
 const VIOLET = {
   PAIR: "6XhRjsjdZYf2m8nMf68JZ5HNpWx2CNcc7eTjsM6QcuZW",
-  CA: (typeof CONFIG!=='undefined' && CONFIG.CONTRACT) ? CONFIG.CONTRACT : "4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump"
+  CA: (typeof CONFIG!=='undefined' && CONFIG.CONTRACT) ? CONFIG.CONTRACT : "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF"
 };
 async function vx_ds_by_pair(pairId) {
   try {
@@ -395,7 +395,7 @@ setInterval(vx_updateHUD, 10000);
 
 /* VIOLET_LIVE_FIX_V224 */
 (function(){
-  const CONFIG = Object.assign({ CONTRACT: "4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump", POLL_MS: 1000 }, (typeof window.CONFIG==="object"?window.CONFIG:{}));
+  const CONFIG = Object.assign({ CONTRACT: "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF", POLL_MS: 1000 }, (typeof window.CONFIG==="object"?window.CONFIG:{}));
   const PAIR = "6XhRjsjdZYf2m8nMf68JZ5HNpWx2CNcc7eTjsM6QcuZW"; const CA = CONFIG.CONTRACT;
   const $ = (s)=>document.querySelector(s);
   const set = (el,t)=>{ if(el) el.textContent=t; };
@@ -417,7 +417,7 @@ setInterval(vx_updateHUD, 10000);
 /* VIOLET_LIVE_FIX_V225 */
 (function(){
   "use strict";
-  window.CONFIG = Object.assign({ CONTRACT: "4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump", POLL_MS: 1000 }, window.CONFIG || {});
+  window.CONFIG = Object.assign({ CONTRACT: "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF", POLL_MS: 1000 }, window.CONFIG || {});
 
   const $ = (s)=>document.querySelector(s);
   const setTxt = (el, v)=>{ if(el) el.textContent = v; };
@@ -507,7 +507,7 @@ setInterval(vx_updateHUD, 10000);
 /* VIOLET_LIVE_FIX_V225 */
 (function(){
   "use strict";
-  window.CONFIG = Object.assign({ CONTRACT: "4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump", POLL_MS: 1000 }, window.CONFIG || {});
+  window.CONFIG = Object.assign({ CONTRACT: "HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF", POLL_MS: 1000 }, window.CONFIG || {});
 
   const $ = (s)=>document.querySelector(s);
   const setTxt = (el, v)=>{ if(el) el.textContent = v; };
@@ -617,7 +617,7 @@ setInterval(vx_updateHUD, 10000);
 /* === VIOLET SAFE LIVE (injected) === */
 const VSAFE = (function(){
   const WORKER = 'https://empty-silence-880a.7fpghxkwx7.workers.dev';
-  const CA = '4JLmssPLSPyE4dueZPM4cWupgPV4xniuQaHt319tpump';
+  const CA = 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF';
   const POLL_MS = (window.CONFIG && window.CONFIG.POLL_MS) || 15000;
   const TRADES_MS = (window.CONFIG && window.CONFIG.TRADES_POLL_MS) || 5000;
 
