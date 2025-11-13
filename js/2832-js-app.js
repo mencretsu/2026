@@ -2,7 +2,7 @@
 const CONFIG = {
   CONTRACT: 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF',
   POLL_MS: 15000,
-  WORKER_URL: 'https://floral-violet-849f.yopikonn.workers.dev' // GANTI INI!
+  WORKER_URL: 'https://floral-violet-849f.yopikonn.workers.dev/' // GANTI INI!
 };
 
 console.log('🚀 WTF Live - Starting...');
