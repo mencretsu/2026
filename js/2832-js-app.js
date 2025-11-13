@@ -1,12 +1,10 @@
 // ===== CONFIG =====
-// ===== CONFIG =====
 const CONFIG = {
   CONTRACT: 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF',
-  POLL_MS: 10000,
-  PROXY: 'https://api.allorigins.win/raw?url=' // CORS proxy
+  POLL_MS: 15000 // 15 detik biar ga spam
 };
 
-console.log('WTF Live - Initializing...');
+console.log('🚀 WTF Live - Starting...');
 
 // ===== BOOT ANIMATION =====
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -16,9 +14,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=> boot.remove(), 1900);
   }
   
-  // Init updates
+  // Init updates setelah 2 detik
   setTimeout(() => {
-    console.log('Starting live updates...');
+    console.log('⚡ Starting live updates...');
     updateAll();
   }, 2000);
 });
@@ -46,86 +44,138 @@ function fmt(num, decimals = 2) {
 }
 
 // ===== UPDATE PRICE & MARKET CAP =====
-// ===== UPDATE PRICE & MARKET CAP =====
 async function updatePriceMC() {
   try {
-    console.log('Fetching price/MC...');
-    const url = `https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`;
-    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
+    console.log('📊 Fetching price/MC from DexScreener...');
     
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (!res.ok) {
+      console.error('❌ DexScreener HTTP', res.status);
+      return false;
+    }
     
     const data = await res.json();
-    console.log('DexScreener response:', data);
+    console.log('✅ DexScreener data:', data);
     
-    if (data.pairs && data.pairs[0]) {
+    if (data && data.pairs && data.pairs.length > 0) {
       const pair = data.pairs[0];
+      console.log('💰 Pair data:', pair);
       
       // Update price
-      const priceEl = document.querySelector('[data-price]');
-      if (priceEl && pair.priceUsd) {
-        const priceVal = priceEl.querySelector('.v') || priceEl;
-        priceVal.textContent = `$${fmt(pair.priceUsd, 6)}`;
-        console.log('✅ Price updated:', pair.priceUsd);
+      if (pair.priceUsd) {
+        const priceEl = document.querySelector('[data-price]');
+        if (priceEl) {
+          const priceVal = priceEl.querySelector('.v') || priceEl;
+          priceVal.textContent = `$${fmt(pair.priceUsd, 8)}`;
+          console.log('✅ Price:', pair.priceUsd);
+        }
       }
       
       // Update market cap
-      const mcEl = document.querySelector('[data-mc]');
-      if (mcEl) {
-        const mcVal = mcEl.querySelector('.v') || mcEl;
-        const mc = pair.fdv || (pair.priceUsd * 1000000000);
-        mcVal.textContent = `$${fmt(mc, 0)}`;
-        console.log('✅ MC updated:', mc);
+      if (pair.fdv || pair.marketCap) {
+        const mcEl = document.querySelector('[data-mc]');
+        if (mcEl) {
+          const mcVal = mcEl.querySelector('.v') || mcEl;
+          const mc = pair.fdv || pair.marketCap || (pair.priceUsd * 1000000000);
+          mcVal.textContent = `$${fmt(mc, 0)}`;
+          console.log('✅ MC:', mc);
+        }
       }
       
       return true;
+    } else {
+      console.warn('⚠️ No pairs found in response');
+      return false;
     }
+    
   } catch (err) {
     console.error('❌ Price/MC error:', err);
+    return false;
   }
-  return false;
 }
 
-// ===== UPDATE HOLDERS =====
-// ===== UPDATE HOLDERS =====
+// ===== UPDATE HOLDERS (MULTIPLE FALLBACKS) =====
 async function updateHolders() {
+  const holdEl = document.querySelector('[data-holders]');
+  if (!holdEl) return false;
+  
+  const holdVal = holdEl.querySelector('.v') || holdEl;
+  
+  // Try method 1: Solscan holders endpoint
   try {
-    console.log('Fetching holders...');
-    const url = `https://public-api.solscan.io/token/holders?tokenAddress=${CONFIG.CONTRACT}&offset=0&limit=1`;
-    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
+    console.log('👥 Trying Solscan holders...');
+    const res = await fetch(`https://public-api.solscan.io/token/holders?tokenAddress=${CONFIG.CONTRACT}&offset=0&limit=1`);
     
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    
-    const data = await res.json();
-    console.log('Solscan response:', data);
-    
-    const holdEl = document.querySelector('[data-holders]');
-    if (holdEl && data.total) {
-      const holdVal = holdEl.querySelector('.v') || holdEl;
-      holdVal.textContent = fmt(data.total, 0);
-      console.log('✅ Holders updated:', data.total);
-      return true;
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.trim()) {
+        const data = JSON.parse(text);
+        if (data.total) {
+          holdVal.textContent = fmt(data.total, 0);
+          console.log('✅ Holders (Solscan):', data.total);
+          return true;
+        }
+      }
     }
   } catch (err) {
-    console.error('❌ Holders error:', err);
+    console.warn('⚠️ Solscan holders failed:', err.message);
+  }
+  
+  // Try method 2: Solscan meta endpoint
+  try {
+    console.log('👥 Trying Solscan meta...');
+    const res = await fetch(`https://public-api.solscan.io/token/meta?tokenAddress=${CONFIG.CONTRACT}`);
+    
+    if (res.ok) {
+      const data = await res.json();
+      const holders = data.holder || data.holders || data.holder_count;
+      if (holders) {
+        holdVal.textContent = fmt(holders, 0);
+        console.log('✅ Holders (Meta):', holders);
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn('⚠️ Solscan meta failed:', err.message);
+  }
+  
+  // Fallback: Keep current value or show placeholder
+  console.log('⚠️ All holder endpoints failed, keeping current value');
+  if (holdVal.textContent === '0') {
+    holdVal.textContent = '—';
   }
   return false;
 }
 
-// ===== UPDATE LIVE FEED =====
 // ===== UPDATE LIVE FEED =====
 async function updateLiveFeed() {
   try {
-    const url = `https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`;
-    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`);
     
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) return false;
     
     const data = await res.json();
     
-    if (data.pairs && data.pairs[0] && data.pairs[0].txns) {
-      const txns = data.pairs[0].txns.h24 || {};
-      renderFeed(txns);
+    if (data && data.pairs && data.pairs[0]) {
+      const pair = data.pairs[0];
+      
+      // Get transaction counts
+      const txns = pair.txns || {};
+      const h24 = txns.h24 || {};
+      const m5 = txns.m5 || {};
+      
+      renderFeed({
+        buys: h24.buys || m5.buys || 0,
+        sells: h24.sells || m5.sells || 0,
+        volume: pair.volume?.h24 || 0
+      });
+      
       return true;
     }
   } catch (err) {
@@ -140,25 +190,25 @@ function renderFeed(txns) {
   if (!feedList) return;
   
   const trades = [];
-  const buyCount = txns.buys || 0;
-  const sellCount = txns.sells || 0;
+  const total = Math.min(10, txns.buys + txns.sells);
   
-  for (let i = 0; i < Math.min(10, buyCount + sellCount); i++) {
-    const isBuy = Math.random() > 0.5;
-    const amount = (Math.random() * 5000000).toFixed(0);
+  if (total === 0) {
+    feedList.innerHTML = '<div class="feed-row" style="opacity:0.5;text-align:center;">No recent trades</div>';
+    return;
+  }
+  
+  // Generate simulated trades
+  for (let i = 0; i < total; i++) {
+    const isBuy = Math.random() > (txns.sells / (txns.buys + txns.sells));
+    const amount = (Math.random() * 5000000 + 100000).toFixed(0);
     const now = new Date();
-    now.setSeconds(now.getSeconds() - (i * 60));
+    now.setSeconds(now.getSeconds() - (i * 45)); // 45 detik interval
     
     trades.push({
       time: now.toLocaleTimeString('en-US', { hour12: false }),
       side: isBuy ? 'BUY' : 'SELL',
       amount: amount
     });
-  }
-  
-  if (trades.length === 0) {
-    feedList.innerHTML = '<div class="feed-row" style="opacity:0.5">No recent trades</div>';
-    return;
   }
   
   const html = trades.map(t => `
@@ -176,26 +226,35 @@ function renderFeed(txns) {
 function setLiveDot(active) {
   const dot = document.querySelector('.live-dot');
   const txt = document.querySelector('.feed .txt');
-  if (!dot) return;
   
-  if (active) {
-    dot.classList.add('ok');
-    if (txt) txt.textContent = 'Live Feed Active';
-  } else {
-    dot.classList.remove('ok');
-    if (txt) txt.textContent = 'Awaiting Signal';
+  if (dot) {
+    if (active) {
+      dot.style.background = '#00ff00';
+      dot.style.boxShadow = '0 0 10px #00ff00';
+    } else {
+      dot.style.background = '#ff4444';
+      dot.style.boxShadow = '0 0 10px #ff4444';
+    }
+  }
+  
+  if (txt) {
+    txt.textContent = active ? 'Live Feed Active' : 'Awaiting Signal';
   }
 }
 
 // ===== MAIN UPDATE FUNCTION =====
 async function updateAll() {
-  console.log('=== Update All ===');
+  console.log('🔄 === UPDATE CYCLE ===');
+  
   const p1 = await updatePriceMC();
   const p2 = await updateHolders();
   const p3 = await updateLiveFeed();
   
-  setLiveDot(p1 || p2 || p3);
-  console.log('Update complete:', {price: p1, holders: p2, feed: p3});
+  const anySuccess = p1 || p2 || p3;
+  setLiveDot(anySuccess);
+  
+  console.log('📊 Results:', { price: p1, holders: p2, feed: p3 });
+  console.log('✅ Update complete\n');
 }
 
 // ===== SIGNALS TYPEWRITER =====
@@ -252,3 +311,5 @@ window.addEventListener('load', () => {
     if (chart) chart.classList.remove('loading');
   }, 2500);
 });
+
+console.log('✅ WTF Live initialized!');
