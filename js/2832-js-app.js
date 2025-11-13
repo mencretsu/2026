@@ -1,7 +1,9 @@
 // ===== CONFIG =====
+// ===== CONFIG =====
 const CONFIG = {
   CONTRACT: 'HxPdrDUWCPauvGp5buDzkrM8uHGSeHkzwuFVVt4sUWTF',
-  POLL_MS: 10000
+  POLL_MS: 10000,
+  PROXY: 'https://api.allorigins.win/raw?url=' // CORS proxy
 };
 
 console.log('WTF Live - Initializing...');
@@ -44,12 +46,12 @@ function fmt(num, decimals = 2) {
 }
 
 // ===== UPDATE PRICE & MARKET CAP =====
+// ===== UPDATE PRICE & MARKET CAP =====
 async function updatePriceMC() {
   try {
     console.log('Fetching price/MC...');
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`, {
-      cache: 'no-store'
-    });
+    const url = `https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`;
+    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
     
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
@@ -61,12 +63,10 @@ async function updatePriceMC() {
       
       // Update price
       const priceEl = document.querySelector('[data-price]');
-      if (priceEl) {
+      if (priceEl && pair.priceUsd) {
         const priceVal = priceEl.querySelector('.v') || priceEl;
-        if (pair.priceUsd) {
-          priceVal.textContent = `$${fmt(pair.priceUsd, 6)}`;
-          console.log('Price updated:', pair.priceUsd);
-        }
+        priceVal.textContent = `$${fmt(pair.priceUsd, 6)}`;
+        console.log('✅ Price updated:', pair.priceUsd);
       }
       
       // Update market cap
@@ -75,24 +75,24 @@ async function updatePriceMC() {
         const mcVal = mcEl.querySelector('.v') || mcEl;
         const mc = pair.fdv || (pair.priceUsd * 1000000000);
         mcVal.textContent = `$${fmt(mc, 0)}`;
-        console.log('MC updated:', mc);
+        console.log('✅ MC updated:', mc);
       }
       
       return true;
     }
   } catch (err) {
-    console.error('Price/MC error:', err);
+    console.error('❌ Price/MC error:', err);
   }
   return false;
 }
 
 // ===== UPDATE HOLDERS =====
+// ===== UPDATE HOLDERS =====
 async function updateHolders() {
   try {
     console.log('Fetching holders...');
-    const res = await fetch(`https://public-api.solscan.io/token/holders?tokenAddress=${CONFIG.CONTRACT}&offset=0&limit=1`, {
-      cache: 'no-store'
-    });
+    const url = `https://public-api.solscan.io/token/holders?tokenAddress=${CONFIG.CONTRACT}&offset=0&limit=1`;
+    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
     
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
@@ -103,21 +103,21 @@ async function updateHolders() {
     if (holdEl && data.total) {
       const holdVal = holdEl.querySelector('.v') || holdEl;
       holdVal.textContent = fmt(data.total, 0);
-      console.log('Holders updated:', data.total);
+      console.log('✅ Holders updated:', data.total);
       return true;
     }
   } catch (err) {
-    console.error('Holders error:', err);
+    console.error('❌ Holders error:', err);
   }
   return false;
 }
 
 // ===== UPDATE LIVE FEED =====
+// ===== UPDATE LIVE FEED =====
 async function updateLiveFeed() {
   try {
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`, {
-      cache: 'no-store'
-    });
+    const url = `https://api.dexscreener.com/latest/dex/tokens/${CONFIG.CONTRACT}`;
+    const res = await fetch(CONFIG.PROXY + encodeURIComponent(url));
     
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
