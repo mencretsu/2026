@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Year 2026 Countdown</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Welcome 2026</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     body {
       font-family: 'Arial', sans-serif;
@@ -19,23 +20,32 @@
       align-items: center;
       justify-content: center;
       color: white;
-      overflow-x: hidden;
+      overflow: hidden;
       position: relative;
       padding: 10px;
+      touch-action: pan-y;
     }
-    body::before {
+    .bg-layer {
       content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
       background-image: url('https://cdn5.telesco.pe/file/YKE3bOv_iuKCOPN8xjuGdUtuv3JXK3X6AbEN6IxyQLmpFmRSRC6uvSGj944O_nmeiTxz5Ec9jrs_Vl37tDSGwKXm9rJFU3Sm0Ju5b8EzujsuAXchq4gViWLnm5pEggEOoJt9UyKxT9JCUiBeWdAbC45ESRr7Y3UXtsssMvuVzbVEo9hNuWuyx9a6bwmA8vio3rY1dRCPAfdLhOgILSBJ6mpYtgzNxI9r62brsYC2OhWkJCc7a23rfu8x5koz6MAWxsn5qrdvpeAAn7bew3Z59NeVWwpJOCytByRliZIQKmH4OMsntJl1gC5SUYagfroBnczk3pu4EJXMshjw_0brow.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      background-size: 600px 600px;
+      background-position: 0 0;
+      background-repeat: repeat;
       opacity: 0.4;
       z-index: 0;
+      will-change: transform;
+    }
+    #bgLayer1 {
+      animation: slideAnim1 100s linear infinite;
+    }
+    @keyframes slideAnim1 {
+      0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+      100% { transform: translate(-20%, -20%) rotate(2deg) scale(1.05); }
     }
     body::after {
       content: '';
@@ -46,6 +56,7 @@
       height: 100%;
       background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
       z-index: 0;
+      pointer-events: none;
     }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -68,13 +79,14 @@
       position: relative;
     }
     #welcome {
-      font-size: clamp(1.8rem, 8vw, 3.5rem);
+      font-size: clamp(1.5rem, 7vw, 3rem);
       font-weight: 700;
       margin-bottom: 2rem;
       text-shadow: 0 0 20px rgba(106, 255, 0, 0.8), 
                    2px 2px 4px rgba(0,0,0,0.8);
       display: inline-block;
       color: #6aff00;
+      word-break: break-word;
     }
     #countdown {
       display: flex;
@@ -86,6 +98,7 @@
     .time-box {
       background: rgba(106, 255, 0, 0.1);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 15px;
       padding: clamp(1rem, 4vw, 2rem) clamp(0.8rem, 3vw, 1.5rem);
       min-width: clamp(70px, 20vw, 120px);
@@ -100,7 +113,7 @@
     .time-box:nth-child(2) { animation-delay: 0.2s; }
     .time-box:nth-child(3) { animation-delay: 0.4s; }
     .time-box:nth-child(4) { animation-delay: 0.6s; }
-    .time-box:hover {
+    .time-box:active {
       transform: translateY(-10px) scale(1.05);
       box-shadow: 0 12px 40px rgba(0,0,0,0.6),
                   0 0 40px rgba(106, 255, 0, 0.6);
@@ -128,7 +141,7 @@
       flex-wrap: wrap;
     }
     .btn {
-      padding: 12px 30px;
+      padding: 14px 32px;
       border: 2px solid #6aff00;
       background: rgba(106, 255, 0, 0.1);
       color: #6aff00;
@@ -137,11 +150,12 @@
       font-weight: 600;
       transition: all 0.3s ease;
       cursor: pointer;
-      font-size: clamp(0.8rem, 3vw, 1rem);
+      font-size: clamp(0.9rem, 3vw, 1rem);
       box-shadow: 0 0 10px rgba(106, 255, 0, 0.3);
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    .btn:hover, .btn:active {
+    .btn:active {
       background: #6aff00;
       color: #000;
       transform: scale(1.1);
@@ -162,7 +176,7 @@
         gap: 0.5rem;
       }
       .btn {
-        padding: 10px 20px;
+        padding: 12px 24px;
       }
     }
     @media (max-width: 400px) {
@@ -177,10 +191,15 @@
         font-size: 0.65rem;
         letter-spacing: 1px;
       }
+      .btn {
+        padding: 10px 20px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="bg-layer" id="bgLayer1"></div>
+  
   <div class="container">
     <h1 id="welcome">Welcome to 2026 Brooooooo</h1>
     <div id="countdown">
@@ -246,7 +265,6 @@
     let glitchInterval, colorInterval;
 
     const effects = {
-      // Efek glitch text
       glitch: () => {
         const chars = '!<>-_\\/[]{}—=+*^?#________';
         let iterations = 0;
@@ -268,7 +286,6 @@
         }, 30);
       },
       
-      // Efek wave
       wave: () => {
         let offset = 0;
         const waveTimer = setInterval(() => {
@@ -281,7 +298,6 @@
         }, 30);
       },
       
-      // Efek explode scale
       explode: () => {
         welcome.style.transition = 'transform 0.15s ease-out';
         welcome.style.transform = 'scale(1.15)';
@@ -291,7 +307,6 @@
         }, 150);
       },
       
-      // Efek rainbow subtle dengan warna pepe-themed
       rainbow: () => {
         const colors = ['#6aff00', '#00ff88', '#00ffff', '#88ff00', '#ccff00', '#aaff00'];
         let i = 0;
@@ -306,13 +321,11 @@
         }, 100);
       },
       
-      // Efek shake
       shake: () => {
         welcome.style.animation = 'shake 0.5s';
         setTimeout(() => welcome.style.animation = '', 500);
       },
       
-      // Efek blur in out
       blur: () => {
         welcome.style.transition = 'filter 0.3s';
         welcome.style.filter = 'blur(4px)';
@@ -322,7 +335,6 @@
         }, 300);
       },
       
-      // Efek letter spacing crazy
       spacing: () => {
         welcome.style.transition = 'letter-spacing 0.4s ease';
         welcome.style.letterSpacing = (Math.random() * 10 + 5) + 'px';
@@ -332,7 +344,6 @@
         }, 400);
       },
 
-      // Efek rotate crazy
       rotate: () => {
         welcome.style.transition = 'transform 0.5s ease';
         welcome.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
@@ -342,7 +353,6 @@
         }, 500);
       },
 
-      // Efek skew
       skew: () => {
         welcome.style.transition = 'transform 0.4s ease';
         welcome.style.transform = `skew(${Math.random() * 20 - 10}deg, ${Math.random() * 10 - 5}deg)`;
@@ -352,7 +362,6 @@
         }, 400);
       },
 
-      // Efek glow intensify
       glowBurst: () => {
         welcome.style.transition = 'text-shadow 0.3s ease';
         welcome.style.textShadow = '0 0 40px rgba(106, 255, 0, 1), 0 0 80px rgba(106, 255, 0, 0.8), 0 0 120px rgba(106, 255, 0, 0.6)';
@@ -363,14 +372,13 @@
       }
     };
 
-    // Random trigger efek setiap 2 detik
     setInterval(() => {
       const effectNames = Object.keys(effects);
       const randomEffect = effectNames[Math.floor(Math.random() * effectNames.length)];
       effects[randomEffect]();
     }, 2000);
 
-    // Prevent zoom on double tap for iOS
+    // Prevent zoom on double tap
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (event) {
       const now = (new Date()).getTime();
@@ -380,7 +388,6 @@
       lastTouchEnd = now;
     }, false);
 
-    // Function buat set links
     window.setLinks = (buy, x, tiktok)=>{
       document.getElementById('buyBtn').href = buy || '#';
       document.getElementById('xBtn').href = x || '#';
